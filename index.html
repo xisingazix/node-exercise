@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing Node.js via Front-end App</title>
+</head>
+
+<body>
+    <form action="" onsubmit="ftnLogin();">
+        <label for="username">Username</label>
+        <input type="text" id="username">
+        <br>
+        <label for="password">Password</label>
+        <input type="password" id="password">
+        <br>
+        <button type="submit">Login</button>
+    </form>
+
+    <!-- Process the login process -->
+    <script>
+        async function ftnLogin() {
+
+            event.preventDefault();            // prevent page refresh
+
+            try {
+                const login_api = "http://127.0.0.1:8888/login";            // setup api endpoint
+
+                const formData = {                                          // create obj. to be sent
+                    "username": document.getElementById("username").value,
+                    "password": document.getElementById("password").value
+                };
+
+                const response = await fetch(login_api, {                   // call the api
+                    "method": "POST",                                         //method = POST
+                    "headers": { "Content-Type": "application/json" },          // set heder on the content to send
+                    "body": JSON.stringify(formData),                         // send the form data
+                });
+
+                if (!response.ok) {                                 //response Check,
+                    if (response.status === 403)                    //status = forbidden
+                        throw new Error("Premission denied.");      //throw new error
+                    else if (response.status === 500)               //status = internal server error
+                        throw new Error("Internal Server Error.");  
+                    else                                            //all other forms of error
+                        throw new Error("An unexpected error occured"); 
+                }
+
+                const result = await response.json();
+                alert(result.msg);
+
+
+            } catch (error) {
+                alert(error.message);       //gracefully handle error
+            }
+
+        }
+    </script>
+
+</body>
+
+</html>
